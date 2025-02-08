@@ -10,7 +10,7 @@ import { nodeTypes } from "./utils/Flow.config";
 const Canvas = () => {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   return (
-    <div className="w-[80VW] text-white bg-[#2d2d2e] h-[80vh]">
+    <div className="w-full text-white bg-[#2d2d2e] h-[calc(100vh-10vh)] flex flex-col">
       <ReactFlow
         panOnDrag={false}
         panOnScroll

@@ -8,7 +8,7 @@ const App = () => {
   return (
     <div className='min-h-screen flex bg-[#2d2d2e] min-w-screen'>
       <LeftSidebar/>
-      <div>
+      <div className='flex-1'>
         <TopBar/>
       <ReactFlowProvider>
           <Canvas />

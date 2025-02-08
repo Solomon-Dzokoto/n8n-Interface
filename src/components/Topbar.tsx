@@ -21,7 +21,7 @@ const TopBar = () => {
             </div>
             <div className="flex items-center gap-4">
                 <div className="flex gap-1 items-center">
-                    <p>{isChecked ? "active" : "inactive"}</p>
+                    <p className="text-[.7rem] text-gray-400 ">{isChecked ? "active" : "inactive"}</p>
                     <label htmlFor="check" className="relative inline-flex items-center cursor-pointer">
                         <input
                             type="checkbox"
