@@ -7,10 +7,8 @@ import useStore from "../zustand/store";
 
 const TopBar = () => {
     const [isChecked, setIsChecked] = useState<boolean>(false)
-    const {extend} = useStore();
-    const handleToggle = () => {
-        setIsChecked(!isChecked)
-    }
+    const {extend} = useStore((state)=>({extend:state.extend}));
+ 
     return (
         <div className={`flex text-white transition-w transition-all ${extend ? "min-w-[95vw]" : "w-full"}  bg-[#414243] border-b border-b-gray-500 justify-between items-center`}>
             <div className="pl-8">
@@ -27,7 +25,7 @@ const TopBar = () => {
                             type="checkbox"
                             id="check"
                             checked={isChecked}
-                            onChange={handleToggle}
+                            onChange={()=>setIsChecked(!isChecked)}
                             className="sr-only"
                         />
                         <div className={`w-10 h-4 ${isChecked ? "bg-blue-600" : "bg-gray-800"} transition-colors rounded-full shadow-inner`}></div>

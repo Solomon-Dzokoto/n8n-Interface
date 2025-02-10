@@ -2,13 +2,24 @@ import { Home, User, Plus, Cloud, Package,  Gift } from "lucide-react";
 import { MdQuestionMark, MdOutlineKeyboardArrowLeft } from "react-icons/md";
 import { SiGitextensions } from "react-icons/si";
 import useStore from "../zustand/store";
-
+import {useCallback} from "react";
 
 const LeftSidebar = () => {
 
-  const {  toggleExtend,extend  } = useStore();
+  interface State {
+    extend: boolean;
+    toggleExtend: () => void;
+  }
+
+  const selector = useCallback((state: State) => ({
+    extend: state.extend,
+    toggleExtend: state.toggleExtend,
+  }), []);
+
+  const {  extend , toggleExtend } = useStore(selector);
 
   return (
+
     <div className={`h-screen ${extend ? "w-16" : "w-64"} bg-[#414243] border-r border-gray-500 text-[#f4f4f4] flex flex-col transition-all duration-300 relative`}>
       
    
@@ -65,15 +76,13 @@ const LeftSidebar = () => {
         </div>
       </div>
 
-      {/* User Profile */}
       <div className="border-t border-gray-700 p-4">
         <div className="text-sm rounded-full bg-gradient-to-r from-green-500 to-blue-500 text-white px-2 w-fit py-2">SE</div>
       </div>
 
-      {/* Sidebar Toggle Button */}
       <button
         onClick={toggleExtend}
-        className="absolute top-1/2 -right-4 bg-gray-700 text-white p-1 rounded-full transform transition-all hover:bg-gray-600"
+        className="absolute cursor-pointer top-1/2 -right-4 bg-gray-700 text-white p-1.5 rounded-full transform transition-all hover:text-[#ff6f5b]"
       >
         <MdOutlineKeyboardArrowLeft className={`transition-transform ${extend ? "rotate-180" : ""}`} />
       </button>
