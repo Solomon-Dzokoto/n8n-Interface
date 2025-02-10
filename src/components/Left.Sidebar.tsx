@@ -1,22 +1,27 @@
 import { Home, User, Plus, Cloud, Package,  Gift } from "lucide-react";
 import { MdQuestionMark, MdOutlineKeyboardArrowLeft } from "react-icons/md";
 import { SiGitextensions } from "react-icons/si";
-import useStore from "../zustand/store";
-import {useCallback} from "react";
+// import useStore from "../zustand/store";
+// import {useCallback} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@reduxjs/toolkit/query";
 
 const LeftSidebar = () => {
+   
+  const {extend,toggleExtend} = useSelector((state:RootState)=>state.toggle)
+  const dispatch = useDispatch()
 
-  interface State {
-    extend: boolean;
-    toggleExtend: () => void;
-  }
+  // interface State {
+  //   extend: boolean;
+  //   toggleExtend: () => void;
+  // }
 
-  const selector = useCallback((state: State) => ({
-    extend: state.extend,
-    toggleExtend: state.toggleExtend,
-  }), []);
+  // const selector = useCallback((state: State) => ({
+  //   extend: state.extend,
+  //   toggleExtend: state.toggleExtend,
+  // }), []);
 
-  const {  extend , toggleExtend } = useStore(selector);
+  // const {  extend , toggleExtend } = useStore(selector);
 
   return (
 
@@ -81,7 +86,7 @@ const LeftSidebar = () => {
       </div>
 
       <button
-        onClick={toggleExtend}
+        onClick={()=>dispatch(toggleExtend)}
         className="absolute cursor-pointer top-1/2 -right-4 bg-gray-700 text-white p-1.5 rounded-full transform transition-all hover:text-[#ff6f5b]"
       >
         <MdOutlineKeyboardArrowLeft className={`transition-transform ${extend ? "rotate-180" : ""}`} />
