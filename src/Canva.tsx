@@ -1,4 +1,4 @@
-import { Background, BackgroundVariant, Panel, MiniMap, ReactFlow } from "@xyflow/react";
+import { Background, BackgroundVariant, Panel, MiniMap, ReactFlow, ConnectionMode, Edge } from "@xyflow/react";
 import { useReactFlow } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
 import { TbZoomIn, TbZoomOut } from "react-icons/tb";
@@ -11,27 +11,34 @@ import StartNode from "./components/Nodes/StartNode.tsx"
 import { Plus } from "lucide-react"
 import { toggleModal } from "./redux/reducers/ToogleReducer.tsx";
 import Open from "./components/Nodes/Open.tsx";
-
+import { edgeStyle, removeEdge } from "./redux/reducers/NodeReducer.tsx";
+import CustomEdge from "./components/Edge/ArrowEdge.tsx";
 
 const Canvas = () => {
   const canvaRef = useRef<HTMLDivElement>(null);
   const nodeTypes = {
     start: StartNode,
-    open : Open
+    open: Open
+  };
+
+  const edgeTypes = {
+    custom: CustomEdge,
   };
   const dispatch = useDispatch<AppDispatch>()
 
-  
-  const { nodes, edges} = useSelector((state: RootState) => state.node)
+  const { nodes, edges } = useSelector((state: RootState) => state.node)
   const { showModal } = useSelector((state: RootState) => state.toggle)
-
 
   const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    dispatch (toggleModal(true))
+    dispatch(toggleModal(true))
   }
 
-  
+  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    if (edge.data?.removable) {
+      dispatch(removeEdge(edge.id));
+    }
+  }, [dispatch]);
 
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
@@ -44,19 +51,32 @@ const Canvas = () => {
       <div className={`absolute inset-0  ${showModal ? "bg-blue-900/50 z-10 " : "-z-10"}  `} />
 
       <ReactFlow
-        panOnDrag={false}
-        panOnScroll
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        fitView
+       nodes={nodes}
+       edges={edges}
+       edgeTypes={edgeTypes}
+       nodeTypes={nodeTypes}
+       fitView
+       defaultEdgeOptions={edgeStyle}
+       connectionMode={ConnectionMode.Loose}
+       snapToGrid={true}
+       snapGrid={[20, 20]}
+       nodesDraggable={true}
+      onEdgeClick={onEdgeClick}
+       panOnScroll={true}
+       nodesConnectable={false}
+       elementsSelectable={true}
       >
-        <Panel position="top-right" style={{right: "1rem"}}>
+        <Panel position="top-right" style={{ right: "1rem" }}>
           <button onClick={(e) => toggle(e)} className={`  border p-2 rounded cursor-pointer`}>
             <Plus />
           </button>
         </Panel >
-        <Background color="gray" variant={BackgroundVariant.Dots} gap={10} />
+        <Background
+          color="gray"
+          variant={BackgroundVariant.Dots}
+          gap={12}
+          size={1}
+        />
         <MiniMap
           nodeColor={"#ffffff"}
           position="bottom-left"
@@ -69,7 +89,7 @@ const Canvas = () => {
           }}
         />
         <Panel position="bottom-left">
-          <div  className="flex gap-4">
+          <div className="flex gap-4">
             <button className="p-2 border rounded bg-gray-800 text-white" onClick={handleFitView}>
               <LuSquareDashed />
             </button>

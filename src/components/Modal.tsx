@@ -88,7 +88,7 @@ const triggers = [
   }
 ];
 const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => {
-  const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number } | null>(null);
+  // const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number } | null>(null);
   // const [searchValue, setSearchValue] = useState("");
 
   // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,11 +112,9 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
   }
 
   const handleNodeSelection = (nodeData: { id: string; data: { icon: JSX.Element; title: string; description: string } }, e: React.MouseEvent<HTMLDListElement>) => {
-    console.dir(e.target)
     e.stopPropagation()
     const newNodeId = uuid();
     const lastNode = findLastNode()
-    console.log(lastNode)
 
     const newNodePosition = {
       x: lastNode ? lastNode.position.x + 100 : 100,
@@ -128,7 +126,7 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
         title: nodeData?.data?.title,
         icon: nodeData?.data?.icon,
         description: nodeData?.data?.description,
-        plusButton: <button onClick={() => dispatch(setTriggeringNode(newNodeId))}>+</button>,
+        // plusButton: <button onClick={() => dispatch(setTriggeringNode(newNodeId))}>+</button>,
       },
       type: "start",
       position: newNodePosition,
@@ -136,7 +134,18 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
     console.log(" b4 triggering node: ", triggeringNode)
     console.log("b4 lastCreated node", lastCreatedNode)
 
-    if (triggeringNode) {
+    if (lastCreatedNode) {
+      console.log("lastCreated node", lastCreatedNode)
+    
+      dispatch(addNode(newNode));
+      dispatch(addNewEdge({
+        id: uuid(),
+        source: lastCreatedNode, 
+        target: newNodeId, 
+        type: "custom", 
+      }));
+      dispatch(setLastCreatedNode(newNodeId)); 
+    } else  if (triggeringNode) {
       console.log("triggering node: ", triggeringNode)
 
       const existingNode = nodes.find(node => node.id === triggeringNode)
@@ -149,28 +158,15 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
           ...existingNode.data, // Preserve the old design
           title: nodeData?.data?.title,
           icon: nodeData?.data?.icon,
-          description: nodeData?.data?.description, // Update description if needed
+          description: nodeData?.data?.description, 
         },
         type: "start", 
-        position: existingNode.position, // Keep the old position
+        position: existingNode.position, 
       };
 
       dispatch(updateNode(replaceNode));
-      // dispatch(updateNode({ ...newNode, id: triggeringNode }));
-      dispatch(setTriggeringNode(null)); // Reset triggering node
-      dispatch(setLastCreatedNode(triggeringNode)); // Set last created node
-    } else if (lastCreatedNode) {
-      console.log("lastCreated node", lastCreatedNode)
-    
-      dispatch(addNode(newNode));
-      dispatch(addNewEdge({
-        id: uuid(),
-        source: lastCreatedNode, 
-        target: newNodeId, 
-        type: "smoothstep", 
-        animated: true,
-      }));
-      dispatch(setLastCreatedNode(newNodeId)); 
+      dispatch(setTriggeringNode(null)); 
+      dispatch(setLastCreatedNode(triggeringNode)); 
     } else {
       console.log("no triggering node or last created node")
       dispatch(addNode(newNode));
@@ -211,11 +207,11 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
   }, [showModal, canvaRef])
 
 
-  const handleAddNextNode = () => {
-    if (!currentPosition) return;
-    dispatch(toggleModal(true));
-    setCurrentPosition(null);
-  };
+  // const handleAddNextNode = () => {
+  //   if (!currentPosition) return;
+  //   dispatch(toggleModal(true));
+  //   setCurrentPosition(null);
+  // };
 
   return (
     <div ref={modalRef} className={`w-[35vw] modal overflow-y-scroll transition-right duration-300 pb-[5rem] ${showModal ? "right-0 backdrop-blur-2xl" : "-right-[35vw] "} fixed z-20  h-screen bg-[#414243] text-white py-6`}>
@@ -249,7 +245,7 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
           </li>
         ))}
       </ul>
-       {currentPosition && (
+       {/* {currentPosition && (
               <div className="fixed inset-0 flex items-center justify-center">
                 <div className="absolute top-0 left-0 w-full h-full">
                   <div className="absolute" style={{ left: currentPosition.x, top: currentPosition.y }}>
@@ -262,7 +258,7 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
     </div>
   );
 };
