@@ -1,5 +1,5 @@
 import {  createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addEdge,Edge, Node } from "@xyflow/react";
+import { Edge, Node } from "@xyflow/react";
 import { Plus } from "lucide-react"
 interface FlowState {
   nodes: Node[];
@@ -18,11 +18,12 @@ const initialState: FlowState = {
         data: {
             title: "Start",
             icon: <Plus size={20} />,
-            description: "Initial step of the workflow"
+            description: "Initial step of the workflow",
+            plusButton: null 
         }
       }
   ],
-  edges: [],
+  edges: [] as Edge[],
   triggeringNode: null,
   lastCreatedNode: null,
 };
@@ -33,8 +34,21 @@ const nodeSlice = createSlice({
   reducers: {
     // Add a new node
     addNode: (state, action: PayloadAction<Node>) => {
-      state.nodes.push(action.payload);
+      const newNode = action.payload;
+      state.nodes.push(newNode);
       state.lastCreatedNode = action.payload.id; // Store last created node
+      if (state.lastCreatedNode && state.lastCreatedNode !== newNode.id) {
+        const newEdge: Edge = {
+          id: `e${state.lastCreatedNode}-${newNode.id}`,
+          source: state.lastCreatedNode,
+          target: newNode.id,
+          type: 'smoothstep',
+        };
+        state.edges.push(newEdge);
+      }
+      
+      state.lastCreatedNode = newNode.id;
+  
     },
 
     // Remove a node
@@ -47,18 +61,49 @@ const nodeSlice = createSlice({
     updateNode: (state, action: PayloadAction<Node>) => {
       const index = state.nodes.findIndex((node) => node.id === action.payload.id);
       if (index !== -1) {
-        state.nodes[index] = action.payload;
+        // Preserve existing data that might not be in the payload
+        state.nodes[index] = {
+          ...state.nodes[index],
+          ...action.payload,
+          data: {
+            ...state.nodes[index].data,
+            ...action.payload.data
+          }
+        };
+      } else {
+        console.warn(`Node with id ${action.payload.id} not found`);
       }
     },
 
     // Handle edges
     addNewEdge: (state, action: PayloadAction<Edge>) => {
-      state.edges.push({
-        id: action.payload.id,
-        source: action.payload.source,
-        target: action.payload.target,
-      });
+      const { source, target } = action.payload;
+      
+      // Check if source and target nodes exist
+      const sourceExists = state.nodes.some(node => node.id === source);
+      const targetExists = state.nodes.some(node => node.id === target);
+      
+      // Check if edge already exists
+      const edgeExists = state.edges.some(
+        edge => edge.source === source && edge.target === target
+      );
+
+      if (sourceExists && targetExists && !edgeExists) {
+        state.edges.push({
+          ...action.payload,
+          type: 'smoothstep',
+          animated: true,
+        });
+      }
     },
+    removeEdge: (state, action: PayloadAction<string>) => {
+      const edgeExists = state.edges.some(edge => edge.id === action.payload);
+      if (edgeExists) {
+        state.edges = state.edges.filter(edge => edge.id !== action.payload);
+      }
+    },
+
+
 
     // Set the triggering node (Plus button)
     setTriggeringNode: (state, action: PayloadAction<string | null>) => {
@@ -74,6 +119,14 @@ const nodeSlice = createSlice({
   },
 });
 
-export const { addNode, removeNode, updateNode, addNewEdge, setTriggeringNode, setLastCreatedNode } =
+export const { 
+  addNode,
+  removeNode,
+  updateNode,
+  addNewEdge,
+  removeEdge,
+  setTriggeringNode,
+  setLastCreatedNode
+ } =
   nodeSlice.actions;
 export default nodeSlice.reducer;

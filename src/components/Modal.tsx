@@ -143,34 +143,34 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
 
       if (!existingNode) return
 
-      // const replaceNode = {
-      //   id: triggeringNode, // Keep the same ID to replace it
-      //   data: {
-      //     ...existingNode.data, // Preserve the old design
-      //     title: nodeData?.data?.title,
-      //     icon: nodeData?.data?.icon,
-      //     description: nodeData?.data?.description, // Update description if needed
-      //   },
-      //   type: "start", 
-      //   position: existingNode.position, // Keep the old position
-      // };
+      const replaceNode = {
+        id: triggeringNode, // Keep the same ID to replace it
+        data: {
+          ...existingNode.data, // Preserve the old design
+          title: nodeData?.data?.title,
+          icon: nodeData?.data?.icon,
+          description: nodeData?.data?.description, // Update description if needed
+        },
+        type: "start", 
+        position: existingNode.position, // Keep the old position
+      };
 
-      // dispatch(updateNode(replaceNode));
-      dispatch(updateNode({ ...newNode, id: triggeringNode }));
+      dispatch(updateNode(replaceNode));
+      // dispatch(updateNode({ ...newNode, id: triggeringNode }));
       dispatch(setTriggeringNode(null)); // Reset triggering node
       dispatch(setLastCreatedNode(triggeringNode)); // Set last created node
     } else if (lastCreatedNode) {
       console.log("lastCreated node", lastCreatedNode)
-      // Subsequent selections: Link to the last created node
+    
       dispatch(addNode(newNode));
       dispatch(addNewEdge({
         id: uuid(),
-        source: lastCreatedNode, // Last node
-        target: newNodeId, // New node
-        type: "smoothstep", // Arrow style
+        source: lastCreatedNode, 
+        target: newNodeId, 
+        type: "smoothstep", 
         animated: true,
       }));
-      dispatch(setLastCreatedNode(newNodeId)); // Update last created node
+      dispatch(setLastCreatedNode(newNodeId)); 
     } else {
       console.log("no triggering node or last created node")
       dispatch(addNode(newNode));
@@ -179,8 +179,6 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
       }
       dispatch(setLastCreatedNode(newNodeId));
     }
-
-    // Close the modal after selection
     dispatch(toggleModal(false));
   };
 
