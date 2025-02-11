@@ -100,9 +100,17 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
     return lastNode
   }
 
-  const handleNodeSelection = (nodeData: { id: string; data: { icon: JSX.Element; title: string; description: string } }, e: React.MouseEvent<HTMLDListElement>) => {
+  const handleNodeSelection = (nodeData: { id: string; data: { icon: JSX.Element; title: string; description: string } }, e: React.MouseEvent<HTMLLIElement>) => {
     e.stopPropagation()
     const newNodeId = uuid();
+    const currNode = nodes.find(node=> node.id === nodeData.id)
+    const index = nodes.indexOf(currNode as Node)
+    const prevNode = nodes[index - 1]
+    console.log("prevNode", prevNode)
+    console.log("index", index)
+    console.log("current",  currNode)
+    console.dir("id",  e.target)
+
     const lastNode = findLastNode()
 
     const newNodePosition = {
@@ -195,12 +203,6 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
     }
   }, [showModal, canvaRef])
 
-
-  // const handleAddNextNode = () => {
-  //   if (!currentPosition) return;
-  //   dispatch(toggleModal(true));
-  //   setCurrentPosition(null);
-  // };
 
   return (
     <div ref={modalRef} className={`w-[35vw] modal overflow-y-scroll transition-right duration-300 pb-[5rem] ${showModal ? "right-0 backdrop-blur-2xl" : "-right-[35vw] "} fixed z-20  h-screen bg-[#414243] text-white py-6`}>
