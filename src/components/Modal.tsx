@@ -1,10 +1,10 @@
-import { FiSearch } from "react-icons/fi"; // Search Icon
+import { FiPlus, FiSearch } from "react-icons/fi"; // Search Icon
 import { MdOutlineEvent, MdAccessTime, MdHttp } from "react-icons/md";
 import { AiOutlineForm, AiOutlineArrowRight } from "react-icons/ai";
 import { BiPlayCircle } from "react-icons/bi";
 import { IoIosChatbubbles } from "react-icons/io";
 import { RiFolderOpenLine } from "react-icons/ri";
-import { useEffect, useRef, RefObject, useCallback } from "react";
+import { useEffect, useRef, RefObject, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store/store";
 import { toggleModal } from "../redux/reducers/ToogleReducer";
@@ -88,7 +88,7 @@ const triggers = [
   }
 ];
 const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => {
-
+  const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number } | null>(null);
   // const [searchValue, setSearchValue] = useState("");
 
   // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +127,8 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
       data: {
         title: nodeData?.data?.title,
         icon: nodeData?.data?.icon,
-        description: nodeData?.data?.description
+        description: nodeData?.data?.description,
+        plusButton: <button onClick={() => dispatch(setTriggeringNode(newNodeId))}>+</button>,
       },
       type: "start",
       position: newNodePosition,
@@ -142,19 +143,20 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
 
       if (!existingNode) return
 
-      const replaceNode = {
-        id: triggeringNode, // Keep the same ID to replace it
-        data: {
-          ...existingNode.data, // Preserve the old design
-          title: nodeData?.data?.title,
-          icon: nodeData?.data?.icon,
-          description: nodeData?.data?.description, // Update description if needed
-        },
-        type: "start", 
-        position: existingNode.position, // Keep the old position
-      };
+      // const replaceNode = {
+      //   id: triggeringNode, // Keep the same ID to replace it
+      //   data: {
+      //     ...existingNode.data, // Preserve the old design
+      //     title: nodeData?.data?.title,
+      //     icon: nodeData?.data?.icon,
+      //     description: nodeData?.data?.description, // Update description if needed
+      //   },
+      //   type: "start", 
+      //   position: existingNode.position, // Keep the old position
+      // };
 
-      dispatch(updateNode(replaceNode));
+      // dispatch(updateNode(replaceNode));
+      dispatch(updateNode({ ...newNode, id: triggeringNode }));
       dispatch(setTriggeringNode(null)); // Reset triggering node
       dispatch(setLastCreatedNode(triggeringNode)); // Set last created node
     } else if (lastCreatedNode) {
@@ -211,6 +213,11 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
   }, [showModal, canvaRef])
 
 
+  const handleAddNextNode = () => {
+    if (!currentPosition) return;
+    dispatch(toggleModal(true));
+    setCurrentPosition(null);
+  };
 
   return (
     <div ref={modalRef} className={`w-[35vw] modal overflow-y-scroll transition-right duration-300 pb-[5rem] ${showModal ? "right-0 backdrop-blur-2xl" : "-right-[35vw] "} fixed z-20  h-screen bg-[#414243] text-white py-6`}>
@@ -244,6 +251,20 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
           </li>
         ))}
       </ul>
+       {currentPosition && (
+              <div className="fixed inset-0 flex items-center justify-center">
+                <div className="absolute top-0 left-0 w-full h-full">
+                  <div className="absolute" style={{ left: currentPosition.x, top: currentPosition.y }}>
+                    <button
+                      onClick={handleAddNextNode}
+                      className="p-2 rounded-full bg-white text-gray-800 hover:bg-gray-100 transition"
+                    >
+                      <FiPlus className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
     </div>
   );
 };

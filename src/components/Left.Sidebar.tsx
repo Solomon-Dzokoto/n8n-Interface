@@ -26,7 +26,7 @@ const LeftSidebar = () => {
 
   return (
 
-    <div className={`h-screen ${extend ? "w-16" : "w-64"} bg-[#414243] border-r border-gray-500 text-[#f4f4f4] flex flex-col transition-all duration-300 relative`}>
+    <div className={`h-screen ${extend ? "w-16" : "w-64"}  bg-[#414243] border-r border-gray-500 text-[#f4f4f4] flex flex-col transition-w duration-300 relative`}>
       
    
       <div className="px-4 py-2 flex items-center justify-between">

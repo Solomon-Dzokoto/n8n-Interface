@@ -30,6 +30,8 @@ const Canvas = () => {
     dispatch (toggleModal(true))
   }
 
+  
+
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
   const handleFitView = useCallback(() => fitView(), [fitView]);
