@@ -1,5 +1,5 @@
 import {  createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Edge, Node } from "@xyflow/react";
+import { Edge, Node, MarkerType, Position } from "@xyflow/react";
 import { Plus } from "lucide-react"
 interface FlowState {
   nodes: Node[];
@@ -7,6 +7,14 @@ interface FlowState {
   triggeringNode: string | null; // Stores the node that opened the modal
   lastCreatedNode: string | null; // Stores the last created node
 }
+
+const edgeStyle = {
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    width: 20,
+    height: 20
+  }
+};
 
 
 const initialState: FlowState = {
@@ -20,7 +28,9 @@ const initialState: FlowState = {
             icon: <Plus size={20} />,
             description: "Initial step of the workflow",
             plusButton: null 
-        }
+        },
+        sourcePosition: Position.Right, // Add source position
+        targetPosition: Position.Left,
       }
   ],
   edges: [] as Edge[],
@@ -32,11 +42,32 @@ const nodeSlice = createSlice({
   name: "node",
   initialState,
   reducers: {
-    // Add a new node
     addNode: (state, action: PayloadAction<Node>) => {
-      const newNode = action.payload;
+      const newNode = {
+       ...action.payload,
+       sourcePosition: Position.Right, // Add source position
+       targetPosition: Position.Left,
+      }
+      if (state.triggeringNode) {
+        state.nodes = state.nodes.filter(node => !node.data.plusButton);
+        state.edges = state.edges.filter(edge => edge.target !== state.triggeringNode);
+      }
       state.nodes.push(newNode);
       state.lastCreatedNode = action.payload.id; // Store last created node
+
+      if (state.triggeringNode) {
+        const newEdge: Edge = {
+          id: `e${state.triggeringNode}-${newNode.id}`,
+          source: state.triggeringNode,
+          target: newNode.id,
+          type: 'smoothstep',
+          animated: true,
+          sourceHandle: "right",
+          targetHandle: 'left',
+          ...edgeStyle // Add arrow style
+        };
+        state.edges.push(newEdge);
+      }
 
       const plusButtonNode: Node = {
         id: `plus-${newNode.id}`,
@@ -45,6 +76,8 @@ const nodeSlice = createSlice({
           y: newNode.position.y 
         },
         type: "open",
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
         data: {
           title: "Add next step",
           icon: <Plus size={10} />,
@@ -57,16 +90,18 @@ const nodeSlice = createSlice({
       state.nodes.push(plusButtonNode);
     
       // Create edge from action node to plus button
-      const newEdge: Edge = {
+      const plusButtonEdge: Edge = {
         id: `e${newNode.id}-${plusButtonNode.id}`,
         source: newNode.id,
         target: plusButtonNode.id,
         type: 'smoothstep',
         animated: true,
+        ...edgeStyle,
       };
-      state.edges.push(newEdge);
+      state.edges.push(plusButtonEdge);
     
-      state.lastCreatedNode = plusButtonNode.id;
+      state.lastCreatedNode = newNode.id;
+      state.triggeringNode = null;
   
     },
 
@@ -80,24 +115,23 @@ const nodeSlice = createSlice({
     updateNode: (state, action: PayloadAction<Node>) => {
       const index = state.nodes.findIndex((node) => node.id === action.payload.id);
       if (index !== -1) {
-    // If updating a plus button node, remove it and its edge
-    if (state.nodes[index].data.plusButton) {
-      state.edges = state.edges.filter(edge => 
-        edge.source !== action.payload.id && edge.target !== action.payload.id
-      );
-      state.nodes.splice(index, 1);
-    } else {
-      // Normal node update
-      state.nodes[index] = {
-        ...state.nodes[index],
-        ...action.payload,
-        data: {
-          ...state.nodes[index].data,
-          ...action.payload.data
+        if (state.nodes[index].data.plusButton) {
+          // Remove the plus button node and its connecting edge
+          state.nodes = state.nodes.filter(node => node.id !== action.payload.id);
+          state.edges = state.edges.filter(edge => 
+            edge.source !== action.payload.id && edge.target !== action.payload.id
+          );
+        } else {
+          state.nodes[index] = {
+            ...state.nodes[index],
+            ...action.payload,
+            data: {
+              ...state.nodes[index].data,
+              ...action.payload.data
+            }
+          };
         }
-      };
-    }
-  }
+      }
     },
 
     // Handle edges

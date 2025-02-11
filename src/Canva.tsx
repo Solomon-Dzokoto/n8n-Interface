@@ -24,11 +24,10 @@ const Canvas = () => {
   
   const { nodes, edges} = useSelector((state: RootState) => state.node)
   const { showModal } = useSelector((state: RootState) => state.toggle)
-  console.log(showModal)
+
 
   const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    console.log("clicked")
     dispatch (toggleModal(true))
   }
 
