@@ -4,11 +4,12 @@ import { SiGitextensions } from "react-icons/si";
 // import useStore from "../zustand/store";
 // import {useCallback} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@reduxjs/toolkit/query";
+import { RootState } from "../redux/store/store";
+import { toggleExtend } from "../redux/reducers/ToogleReducer";
 
 const LeftSidebar = () => {
    
-  const {extend,toggleExtend} = useSelector((state:RootState)=>state.toggle)
+  const {extend} = useSelector((state:RootState)=> state.toggle)
   const dispatch = useDispatch()
 
   // interface State {
@@ -86,7 +87,7 @@ const LeftSidebar = () => {
       </div>
 
       <button
-        onClick={()=>dispatch(toggleExtend)}
+        onClick={()=>dispatch(toggleExtend())}
         className="absolute cursor-pointer top-1/2 -right-4 bg-gray-700 text-white p-1.5 rounded-full transform transition-all hover:text-[#ff6f5b]"
       >
         <MdOutlineKeyboardArrowLeft className={`transition-transform ${extend ? "rotate-180" : ""}`} />

@@ -3,12 +3,12 @@ import Button from "./ui/Button";
 import { IoReload, IoLogoGithub } from "react-icons/io5";
 import { IoIosMore } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { RootState } from "@reduxjs/toolkit/query";
+import { RootState } from "../redux/store/store";
 
 
 const TopBar = () => {
     const [isChecked, setIsChecked] = useState<boolean>(false)
-    const extend = useSelector((state: RootState) => state.extend)
+    const extend = useSelector((state: RootState) => state.toggle.extend)
  
     return (
         <div className={`flex text-white transition-w transition-all ${extend ? "min-w-[95vw]" : "w-full"}  bg-[#414243] border-b border-b-gray-500 justify-between items-center`}>

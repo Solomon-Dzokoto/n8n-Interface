@@ -9,10 +9,11 @@ const toggleReducer = createSlice({
     initialState,
     reducers: {
         toggleExtend : (state)=> {
-         state.extend = !state
+         state.extend = !state.extend
         },
         toggleModal : (state,action)=>{
             state.showModal = action.payload
+       
         }
     }
 })

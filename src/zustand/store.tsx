@@ -1,10 +1,7 @@
 import { create } from "zustand";
-import StartNode from "../components/Nodes/StartNode";
 
-export const nodeTypes = {
-    commerce: StartNode
-};
 
+export
 interface NodeProps {
     id: string;
     position: { x: number; y: number };

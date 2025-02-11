@@ -4,24 +4,31 @@ import '@xyflow/react/dist/style.css';
 import { TbZoomIn, TbZoomOut } from "react-icons/tb";
 import { LuSquareDashed } from "react-icons/lu";
 import TriggersList from "./components/Modal";
-import { useRef,useMemo, useCallback } from "react";
-import useStore from "./zustand/store";
-import { nodeTypes } from "./zustand/store";
+import { useRef, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./redux/store/store";
+import StartNode from "./components/Nodes/StartNode.tsx"
+import { Plus } from "lucide-react"
+import { toggleModal } from "./redux/reducers/ToogleReducer.tsx";
+
 
 const Canvas = () => {
   const canvaRef = useRef<HTMLDivElement>(null);
-  const { showModal, nodes } = useStore((state) => ({
-    showModal: state.showModal,
-    nodes: state.nodes
-  }));
+  const nodeTypes = {
+    start: StartNode
+  };
+  const dispatch = useDispatch<AppDispatch>()
 
+  
+  const { nodes, edges} = useSelector((state: RootState) => state.node)
+  const { showModal } = useSelector((state: RootState) => state.toggle)
+  console.log(showModal)
 
-  const memoizedNode = useMemo(()=> {
-   nodes.map(node=> ({
-     ...node,
-      data: node?.data || {}
-   }))
-  },[nodes])
+  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    console.log("clicked")
+    dispatch (toggleModal(true))
+  }
 
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
@@ -31,15 +38,21 @@ const Canvas = () => {
 
   return (
     <div ref={canvaRef} className="w-full relative text-white bg-[#2d2d2e] h-[calc(100vh-10vh)] flex flex-col">
-      {showModal && (<div className="fixed inset-0 bg-black/50 z-10" /> )}
+      <div className={`absolute inset-0  ${showModal ? "bg-blue-900/50 z-10 " : "-z-10"}  `} />
 
       <ReactFlow
         panOnDrag={false}
         panOnScroll
+        nodes={nodes}
+        edges={edges}
         nodeTypes={nodeTypes}
-        nodes={memoizedNode}
         fitView
       >
+        <Panel position="top-right" style={{right: "1rem"}}>
+          <button onClick={(e) => toggle(e)} className={`  border p-2 rounded cursor-pointer`}>
+            <Plus />
+          </button>
+        </Panel >
         <Background color="gray" variant={BackgroundVariant.Dots} gap={10} />
         <MiniMap
           nodeColor={"#ffffff"}
@@ -53,7 +66,7 @@ const Canvas = () => {
           }}
         />
         <Panel position="bottom-left">
-          <div className="flex gap-4">
+          <div  className="flex gap-4">
             <button className="p-2 border rounded bg-gray-800 text-white" onClick={handleFitView}>
               <LuSquareDashed />
             </button>
@@ -67,7 +80,7 @@ const Canvas = () => {
         </Panel>
       </ReactFlow>
 
-      <TriggersList canvaRef={canvaRef} onClose={() => useStore.setState({ showModal: false })}/>
+      <TriggersList canvaRef={canvaRef} />
     </div>
   );
 };
