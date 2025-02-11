@@ -11,7 +11,7 @@ import StartNode from "./components/Nodes/StartNode.tsx"
 import { Plus } from "lucide-react"
 import { toggleModal } from "./redux/reducers/ToogleReducer.tsx";
 import Open from "./components/Nodes/Open.tsx";
-import { edgeStyle, removeEdge } from "./redux/reducers/NodeReducer.tsx";
+import { edgeStyle} from "./redux/reducers/NodeReducer.tsx";
 import CustomEdge from "./components/Edge/ArrowEdge.tsx";
 
 const Canvas = () => {
