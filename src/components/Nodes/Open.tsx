@@ -20,9 +20,8 @@ const Open = ({ data }: { data: Record<string, unknown> }) => {
                 id="target"
                 style={{
                     background: '#555',
-                    width: 8,
-                    height: 8,
-                    left: '-4px'
+                    visibility:"hidden",
+                    top: '75%'
                 }}
             />
             <Handle
@@ -31,9 +30,8 @@ const Open = ({ data }: { data: Record<string, unknown> }) => {
                 id="source"
                 style={{
                     background: '#555',
-                    width: 8,
-                    height: 8,
-                    top: '50%'
+                    visibility:"hidden",
+                     top: '75%'
                 }}
             />
             <button onClick={(e) => toggle(e)} className="p-1 hover:text-[#ff6f5b] cursor-pointer mt-6 border rounded ">

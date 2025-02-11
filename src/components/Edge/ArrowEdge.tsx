@@ -32,7 +32,6 @@ const CustomEdge = ({
               position: 'absolute',
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               fontSize: 12,
-              // Everything inside EdgeLabelRenderer has no pointer events by default
               pointerEvents: 'all',
             }}
             className="nodrag nopan"
