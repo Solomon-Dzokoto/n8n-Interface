@@ -14,14 +14,14 @@ export const edgeStyle = {
   },
   markerEnd: {
     type: MarkerType.ArrowClosed,
-    width: 20,
-    height: 20,
+    width: 10,
+    height: 10,
     color: '#888'
   },
   style: {
-    strokeWidth: 2,
+    strokeWidth: 1,
     stroke: '#888',
-    opacity: 1, 
+    opacity: 0.8, 
     cursor: 'pointer',
     transition: 'all 0.3s ease',
     ':hover': {
@@ -98,7 +98,7 @@ const nodeSlice = createSlice({
     const plusButtonNode: Node = {
       id: `plus-${newNode.id}`,
       position: {
-        x: newNode.position.x + 200,
+        x: newNode.position.x + 100,
         y: newNode.position.y
       },
       type: "open",
@@ -126,7 +126,6 @@ const nodeSlice = createSlice({
 
   }
 
- 
    if( state.lastCreatedNode){
     state.triggeringNode = newNode.id;
    }

@@ -88,17 +88,6 @@ const triggers = [
   }
 ];
 const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => {
-  // const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number } | null>(null);
-  // const [searchValue, setSearchValue] = useState("");
-
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setSearchValue(e.target.value);
-  // };
-  // const {showModal,toggleModal} = useStore((state)=>({
-  //   showModal: state.showModal,
-  //   toggleModal: state.toggleModal,
-  // }))
-
 
   const dispatch = useDispatch<AppDispatch>()
   const triggeringNode = useSelector((state: RootState) => state.node.triggeringNode);
@@ -117,7 +106,7 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
     const lastNode = findLastNode()
 
     const newNodePosition = {
-      x: lastNode ? lastNode.position.x + 100 : 100,
+      x:  lastNode.position.x + 120 ,
       y: lastNode ? lastNode.position.y : 100,
     }
     const newNode: Node = {
@@ -155,7 +144,7 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
       const replaceNode = {
         id: triggeringNode, // Keep the same ID to replace it
         data: {
-          ...existingNode.data, // Preserve the old design
+          ...existingNode.data,
           title: nodeData?.data?.title,
           icon: nodeData?.data?.icon,
           description: nodeData?.data?.description, 
@@ -241,24 +230,11 @@ const TriggersList = ({ canvaRef }: { canvaRef: RefObject<HTMLDivElement> }) => 
               <h3 className="font-medium text-white">{trigger?.data?.title}</h3>
               <p className="text-[.7rem] text-gray-400">{trigger?.data?.description}</p>
             </div>
-            {/* {trigger.action && <div>{trigger.action}</div>} */}
+      
           </li>
         ))}
       </ul>
-       {/* {currentPosition && (
-              <div className="fixed inset-0 flex items-center justify-center">
-                <div className="absolute top-0 left-0 w-full h-full">
-                  <div className="absolute" style={{ left: currentPosition.x, top: currentPosition.y }}>
-                    <button
-                      onClick={handleAddNextNode}
-                      className="p-2 rounded-full bg-white text-gray-800 hover:bg-gray-100 transition"
-                    >
-                      <FiPlus className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )} */}
+    
     </div>
   );
 };

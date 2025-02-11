@@ -35,6 +35,7 @@ const Canvas = () => {
   }
 
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation()
     if (edge.data?.removable) {
       dispatch(removeEdge(edge.id));
     }
