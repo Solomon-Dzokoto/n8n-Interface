@@ -10,12 +10,14 @@ import { AppDispatch, RootState } from "./redux/store/store";
 import StartNode from "./components/Nodes/StartNode.tsx"
 import { Plus } from "lucide-react"
 import { toggleModal } from "./redux/reducers/ToogleReducer.tsx";
+import Open from "./components/Nodes/Open.tsx";
 
 
 const Canvas = () => {
   const canvaRef = useRef<HTMLDivElement>(null);
   const nodeTypes = {
-    start: StartNode
+    start: StartNode,
+    open : Open
   };
   const dispatch = useDispatch<AppDispatch>()
 

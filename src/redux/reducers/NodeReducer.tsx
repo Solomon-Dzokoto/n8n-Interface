@@ -37,17 +37,36 @@ const nodeSlice = createSlice({
       const newNode = action.payload;
       state.nodes.push(newNode);
       state.lastCreatedNode = action.payload.id; // Store last created node
-      if (state.lastCreatedNode && state.lastCreatedNode !== newNode.id) {
-        const newEdge: Edge = {
-          id: `e${state.lastCreatedNode}-${newNode.id}`,
-          source: state.lastCreatedNode,
-          target: newNode.id,
-          type: 'smoothstep',
-        };
-        state.edges.push(newEdge);
-      }
+
+      const plusButtonNode: Node = {
+        id: `plus-${newNode.id}`,
+        position: {
+          x: newNode.position.x + 100, // Offset to the right
+          y: newNode.position.y 
+        },
+        type: "open",
+        data: {
+          title: "Add next step",
+          icon: <Plus size={10} />,
+          description: "Add next workflow step",
+          plusButton: true
+        }
+      };
       
-      state.lastCreatedNode = newNode.id;
+      // Add the plus button node
+      state.nodes.push(plusButtonNode);
+    
+      // Create edge from action node to plus button
+      const newEdge: Edge = {
+        id: `e${newNode.id}-${plusButtonNode.id}`,
+        source: newNode.id,
+        target: plusButtonNode.id,
+        type: 'smoothstep',
+        animated: true,
+      };
+      state.edges.push(newEdge);
+    
+      state.lastCreatedNode = plusButtonNode.id;
   
     },
 
@@ -61,18 +80,24 @@ const nodeSlice = createSlice({
     updateNode: (state, action: PayloadAction<Node>) => {
       const index = state.nodes.findIndex((node) => node.id === action.payload.id);
       if (index !== -1) {
-        // Preserve existing data that might not be in the payload
-        state.nodes[index] = {
-          ...state.nodes[index],
-          ...action.payload,
-          data: {
-            ...state.nodes[index].data,
-            ...action.payload.data
-          }
-        };
-      } else {
-        console.warn(`Node with id ${action.payload.id} not found`);
-      }
+    // If updating a plus button node, remove it and its edge
+    if (state.nodes[index].data.plusButton) {
+      state.edges = state.edges.filter(edge => 
+        edge.source !== action.payload.id && edge.target !== action.payload.id
+      );
+      state.nodes.splice(index, 1);
+    } else {
+      // Normal node update
+      state.nodes[index] = {
+        ...state.nodes[index],
+        ...action.payload,
+        data: {
+          ...state.nodes[index].data,
+          ...action.payload.data
+        }
+      };
+    }
+  }
     },
 
     // Handle edges

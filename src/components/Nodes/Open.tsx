@@ -1,9 +1,9 @@
-import {FC} from 'react'
+import React from "react"
 
-const Open:FC = () => {
+const Open = ({data}: {data: Record<string, unknown>}) => {
   return (
-    <div>
-     
+    <div className="p-1 mt-6 border rounded ">
+     {data?.icon as React.ReactNode}
     </div>
   )
 }
