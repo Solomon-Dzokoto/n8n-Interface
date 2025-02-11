@@ -1,10 +1,10 @@
-import { BaseEdge, EdgeProps, getBezierPath, EdgeLabelRenderer } from '@xyflow/react';
+import {  EdgeProps, getBezierPath, EdgeLabelRenderer } from '@xyflow/react';
 import { Plus } from 'lucide-react';
+import { FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { toggleModal } from '../../redux/reducers/ToogleReducer';
-import { FaTrash } from 'react-icons/fa';
-import { useState, useEffect, useRef } from 'react';
-
+import { removeEdge } from '../../redux/reducers/NodeReducer';
+import { useState } from 'react';
 
 const CustomEdge = ({
     id,
@@ -26,67 +26,59 @@ const CustomEdge = ({
         targetY,
         targetPosition,
     });
-    const [hover, setHover] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const onHover = () => {
-            if (ref.current) {
-                setHover((prev: boolean) => !prev)
-            }
-        }
-        document.addEventListener("mouseup", onHover)
-        return () => {
-            document.removeEventListener("mousedown", onHover)
-        }
-    }, [setHover])
-
-
+    const [hovered, setHovered] = useState(false);
     const dispatch = useDispatch();
-    const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation()
-        dispatch(toggleModal(true))
-    }
+
+    const handleAddNode = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        dispatch(toggleModal(true));
+    };
+
+    const handleRemoveEdge = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        dispatch(removeEdge(id));
+    };
 
     return (
         <>
-            <BaseEdge 
-            path={edgePath}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-            markerEnd={markerEnd} 
-            style={style} 
+            <path
+                id={id}
+                className="react-flow__edge-path"
+                d={edgePath}
+                markerEnd={markerEnd}
+                style={style}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
             />
-            { hover  && (
+            {hovered && (
                 <EdgeLabelRenderer>
-                    <div
-                        ref={ref}
+                    <div 
                         style={{
                             position: 'absolute',
                             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-
                         }}
-                        className="nodrag bg-[#2d2d2e] h-fit w-fit px-2 justify-center  flex items-center gap-1 pointer-events-auto text-[1rem] nopan "
+                        className="nodrag flex gap-1 pointer-events-auto -top-2 items-center shadow bg-[#333] p-1 rounded nopan"
+                        onMouseEnter={() => setHovered(true)}
+                        onMouseLeave={() => setHovered(false)}
                     >
-                        <button onClick={(e) => toggle(e)} className="p-1 hover:text-[#ff6f5b] cursor-pointer mt-6 border rounded ">
-                            <Plus size={10} />
+                        <button
+                             className=" text-[.4rem] cursor-pointer hover:text-red-500 "
+                            onClick={handleAddNode}
+                        >
+                            <Plus size={12}/>
                         </button>
                         <button
-                            className=" text-gray 
-                         flex items-center justify-center transition-colors
-                         hover:text-[#ff6f5b] cursor-pointer"
-                            onClick={(event) => {
-                                event.stopPropagation();
-                                console.log('remove edge');
-                            }}
+                            className=" text-[.4rem] cursor-pointer hover:text-red-500 "
+                            onClick={handleRemoveEdge}
                         >
-                            <FaTrash size={10} />
+                            <FaTrash size={12}/>
                         </button>
                     </div>
                 </EdgeLabelRenderer>
             )}
         </>
-    );
-};
+    )
+}
 
 export default CustomEdge;

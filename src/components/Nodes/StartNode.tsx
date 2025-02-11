@@ -9,7 +9,6 @@ const StartNode = ({ data, id }: { data: Record<string, unknown>, id: string }) 
     console.log(data)
     const dispatch = useDispatch<AppDispatch>()
 
-
     return (
         <div >
            <Handle
@@ -35,7 +34,7 @@ const StartNode = ({ data, id }: { data: Record<string, unknown>, id: string }) 
             />
             <button onClick={(e) => {
                 e.stopPropagation()
-                dispatch(setTriggeringNode(id)); // Set the triggering node
+                dispatch(setTriggeringNode(id)); 
                 dispatch(toggleModal(true));
             }} className="p-5 group  cursor-pointer bg-[#2d2d2e]  border rounded-md border-dashed ">
                 <span className="group-hover:text-[#ff6f5b] ">

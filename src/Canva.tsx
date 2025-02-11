@@ -34,12 +34,12 @@ const Canvas = () => {
     dispatch(toggleModal(true))
   }
 
-  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
-    event.stopPropagation()
-    if (edge.data?.removable) {
-      dispatch(removeEdge(edge.id));
-    }
-  }, [dispatch]);
+  // const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+  //   event.stopPropagation()
+  //   if (edge.data?.removable) {
+  //     dispatch(removeEdge(edge.id));
+  //   }
+  // }, [dispatch]);
 
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
@@ -62,7 +62,7 @@ const Canvas = () => {
        snapToGrid={true}
        snapGrid={[20, 20]}
        nodesDraggable={true}
-      onEdgeClick={onEdgeClick}
+      // onEdgeClick={onEdgeClick}
        panOnScroll={true}
        nodesConnectable={false}
        elementsSelectable={true}

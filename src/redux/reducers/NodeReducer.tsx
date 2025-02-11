@@ -1,16 +1,16 @@
-import {  createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Edge, Node, MarkerType, Position } from "@xyflow/react";
 import { Plus } from "lucide-react"
 interface FlowState {
   nodes: Node[];
   edges: Edge[];
-  triggeringNode: string | null; 
+  triggeringNode: string | null;
   lastCreatedNode: string | null;
 }
 
 export const edgeStyle = {
-  markerStart:{
-   type : MarkerType.Arrow
+  markerStart: {
+    type: MarkerType.Arrow
   },
   markerEnd: {
     type: MarkerType.ArrowClosed,
@@ -19,12 +19,12 @@ export const edgeStyle = {
     color: '#888'
   },
   style: {
-    strokeWidth: 1,
+    strokeWidth: 2,
     stroke: '#888',
-    opacity: 0.8, 
+    opacity: 0.7,
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    ':hover': {
+    '&:hover': {
       stroke: '#ff6f5b',
       opacity: 1
     }
@@ -43,7 +43,7 @@ const initialState: FlowState = {
         title: "When clicking 'Execute Workflow'",
         icon: <Plus size={20} />,
         description: "Trigger workflow execution",
-        plusButton: null 
+        plusButton: null
       },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
@@ -69,13 +69,13 @@ const nodeSlice = createSlice({
 
       if (state.triggeringNode) {
         const plusButtonNode = state.nodes.find(node => node.data.plusButton);
-    if (plusButtonNode) {
-      state.nodes = state.nodes.filter(node => node.id !== plusButtonNode.id);
-      state.edges = state.edges.filter(edge => 
-        edge.source !== plusButtonNode.id && 
-        edge.target !== plusButtonNode.id
-      );
-    }
+        if (plusButtonNode) {
+          state.nodes = state.nodes.filter(node => node.id !== plusButtonNode.id);
+          state.edges = state.edges.filter(edge =>
+            edge.source !== plusButtonNode.id &&
+            edge.target !== plusButtonNode.id
+          );
+        }
 
 
         const newEdge: Edge = {
@@ -91,46 +91,46 @@ const nodeSlice = createSlice({
       }
 
       state.nodes.push(newNode);
-      
-     // Only create plus button if this node isn't connected to anything
-  const isNodeConnected = state.edges.some(edge => edge.source === newNode.id);
-  if (!isNodeConnected) {
-    const plusButtonNode: Node = {
-      id: `plus-${newNode.id}`,
-      position: {
-        x: newNode.position.x + 100,
-        y: newNode.position.y
-      },
-      type: "open",
-      data: {
-        icon: <Plus size={16} />,
-        plusButton: true
+
+      // Only create plus button if this node isn't connected to anything
+      const isNodeConnected = state.edges.some(edge => edge.source === newNode.id);
+      if (!isNodeConnected) {
+        const plusButtonNode: Node = {
+          id: `plus-${newNode.id}`,
+          position: {
+            x: newNode.position.x + 100,
+            y: newNode.position.y
+          },
+          type: "open",
+          data: {
+            icon: <Plus size={16} />,
+            plusButton: true
+          }
+        };
+
+        state.nodes.push(plusButtonNode);
+
+        const plusButtonEdge: Edge = {
+          id: `e${newNode.id}-${plusButtonNode.id}`,
+          source: newNode.id,
+          target: plusButtonNode.id,
+          sourceHandle: 'source',
+          targetHandle: 'target',
+          ...edgeStyle,
+          style: {
+            ...edgeStyle.style,
+          },
+          data: { removable: true }
+        };
+        state.edges.push(plusButtonEdge);
+
       }
-    };
 
-    state.nodes.push(plusButtonNode);
+      if (state.lastCreatedNode) {
+        state.triggeringNode = newNode.id;
+      }
 
-    const plusButtonEdge: Edge = {
-      id: `e${newNode.id}-${plusButtonNode.id}`,
-      source: newNode.id,
-      target: plusButtonNode.id,
-      sourceHandle: 'source',
-      targetHandle: 'target',
-      ...edgeStyle,
-      style: {
-        ...edgeStyle.style,
-      },
-      data: { removable: true }
-    };
-    state.edges.push(plusButtonEdge);
 
-  }
-
-   if( state.lastCreatedNode){
-    state.triggeringNode = newNode.id;
-   }
-
-    
 
       // state.lastCreatedNode = newNode.id;
       // state.triggeringNode = null;
@@ -149,7 +149,7 @@ const nodeSlice = createSlice({
         if (state.nodes[index].data.plusButton) {
           // Remove the plus button node and its connecting edge
           state.nodes = state.nodes.filter(node => node.id !== action.payload.id);
-          state.edges = state.edges.filter(edge => 
+          state.edges = state.edges.filter(edge =>
             edge.source !== action.payload.id && edge.target !== action.payload.id
           );
         } else {
@@ -168,11 +168,11 @@ const nodeSlice = createSlice({
     // Handle edges
     addNewEdge: (state, action: PayloadAction<Edge>) => {
       const { source, target } = action.payload;
-      
+
       // Check if source and target nodes exist
       const sourceExists = state.nodes.some(node => node.id === source);
       const targetExists = state.nodes.some(node => node.id === target);
-      
+
       // Check if edge already exists
       const edgeExists = state.edges.some(
         edge => edge.source === source && edge.target === target
@@ -186,69 +186,28 @@ const nodeSlice = createSlice({
       }
     },
     removeEdge: (state, action: PayloadAction<string>) => {
-      // Find the edge to be removed
-      const edgeToRemove = state.edges.find(edge => edge.id === action.payload);
-      if (edgeToRemove) {
-        // Remove the edge
-        state.edges = state.edges.filter(edge => edge.id !== action.payload);
-    
-        // Check if source node has no more outgoing connections
-        const sourceHasConnections = state.edges.some(
-          edge => edge.source === edgeToRemove.source
-        );
-    
-        if (!sourceHasConnections) {
-          // Add new plus button for the disconnected node
-          const sourceNode = state.nodes.find(node => node.id === edgeToRemove.source);
-          if (sourceNode) {
-            const plusButtonNode: Node = {
-              id: `plus-${sourceNode.id}`,
-              position: {
-                x: sourceNode.position.x + 200,
-                y: sourceNode.position.y
-              },
-              type: "open",
-              data: {
-                icon: <Plus size={16} />,
-                plusButton: true
-              }
-            };
-            state.nodes.push(plusButtonNode);
-    
-            // Add dashed edge to new plus button
-            const plusButtonEdge: Edge = {
-              id: `e${sourceNode.id}-${plusButtonNode.id}`,
-              source: sourceNode.id,
-              target: plusButtonNode.id,
-              sourceHandle: 'source',
-              targetHandle: 'target',
-              ...edgeStyle,
-              style: {
-                ...edgeStyle.style,
-              },
-              data: { removable: true }
-            };
-            state.edges.push(plusButtonEdge);
-          }
-        }
+      console.log(action.payload)
+      const unwantedEdge = state.edges.find(edge => edge.id === action.payload)
+      if (unwantedEdge) {
+        state.edges = state.edges.filter(edge => edge.id !== unwantedEdge?.id)
       }
-    }
-        ,
+    },
+
     // Set the triggering node (Plus button)
     setTriggeringNode: (state: FlowState, action: PayloadAction<string | null>) => {
-      
+
       state.triggeringNode = action.payload;
     },
 
     // Set the last created node
     setLastCreatedNode: (state, action: PayloadAction<string | null>) => {
- 
+
       state.lastCreatedNode = action.payload;
     },
   },
 });
 
-export const { 
+export const {
   addNode,
   removeNode,
   updateNode,
@@ -256,7 +215,7 @@ export const {
   removeEdge,
   setTriggeringNode,
   setLastCreatedNode
- } =
+} =
   nodeSlice.actions;
 export default nodeSlice.reducer;
 
