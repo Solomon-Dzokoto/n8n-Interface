@@ -1,4 +1,4 @@
-import { FiPlus, FiSearch } from "react-icons/fi"; // Search Icon
+import {  FiSearch } from "react-icons/fi"; // Search Icon
 import { MdOutlineEvent, MdAccessTime, MdHttp } from "react-icons/md";
 import { AiOutlineForm, AiOutlineArrowRight } from "react-icons/ai";
 import { BiPlayCircle } from "react-icons/bi";
